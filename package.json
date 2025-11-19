@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 7070",
-    "build": "git submodule update --remote --merge && next build && ./build.sh",
+    "build": "git submodule update --remote --merge && next build",
     "start": "next start",
     "lint": "eslint"
   },
