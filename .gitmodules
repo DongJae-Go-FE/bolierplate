@@ -1,0 +1,3 @@
+[submodule "hdc-ui"]
+	path = hdc-ui
+	url = https://bitbucket.org/hdclabs/hdc-ui.git
