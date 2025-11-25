@@ -18,18 +18,13 @@ import { Input } from "@hdc-ui/components/ui/input";
 //로그인 요청시 버튼에 추가
 //import { Spinner } from "@hdc-ui/components/ui/spinner";
 
-import { FormRoot, FormControl, FormField, FormMessage } from "./form";
+import { FormRoot, FormControl, FormField, FormMessage } from "../../ui/form";
 
 import { cn } from "@hdc-ui/utils";
 
-import { LoginSchema } from "../zod/schema";
+import { LoginSchema } from "../../../lib/zod/schema";
 
-type LoginForm = {
-  id: string;
-  pw: string;
-};
-
-export default function LoginForm() {
+export default function Login() {
   const [formDataObj, setFormDataObj] = useState({
     id: "",
     pw: "",
@@ -127,10 +122,6 @@ export default function LoginForm() {
         <Button className="mb-6 w-full" color="gray" size="xl">
           로그인
         </Button>
-        <div className="body03M text-center text-gray-500">
-          <div>필요한 내용 작성</div>
-          <div>필요한 내용 작성2</div>
-        </div>
       </FormRoot>
       <AlertDialog>
         {/** open 로직을 AlertDialogContent에서 설정을 하거나 AlertDialogTrigger를 사용 */}
@@ -146,6 +137,10 @@ export default function LoginForm() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <p className="body03M text-center text-gray-500">
+        Copyright © HDC Labs Corp. All rights reserved.
+      </p>
     </div>
   );
 }
