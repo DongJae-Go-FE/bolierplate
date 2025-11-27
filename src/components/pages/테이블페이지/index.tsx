@@ -17,6 +17,7 @@ export default function TablePage() {
     <>
       <div className="w-ful mb-4 h-50">
         <Table type="description">
+          <TableCaption>프로젝트 문서 목록</TableCaption>
           <TableBody>
             <TableRow>
               <TableHead>id</TableHead>

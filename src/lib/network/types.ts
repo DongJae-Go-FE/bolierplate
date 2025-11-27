@@ -26,11 +26,6 @@
  * @property {T[]} data - 응답 데이터 배열
  */
 export type CommonResponse<T = unknown> = {
-  timestamp: string;
-  success: boolean;
-  msg: string;
-  code: number;
-  error: unknown;
   data: T[];
 };
 
@@ -50,4 +45,14 @@ export type REQ_EXAMPLE_TYPE = {
  */
 export type RES_EXAMPLE_TYPE = CommonResponse<{
   example: string;
+}>;
+
+export type RES_TABLE_TYPE = CommonResponse<{
+  id: number;
+  header: string;
+  type: string;
+  status: string;
+  target: string;
+  limit: string;
+  reviewer: string;
 }>;

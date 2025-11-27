@@ -1,23 +1,5 @@
 [
   {
-    "id": 1,
-    "header": "Cover page",
-    "type": "Cover page",
-    "status": "In Process",
-    "target": "18",
-    "limit": "5",
-    "reviewer": "Eddie Lake"
-  },
-  {
-    "id": 2,
-    "header": "Table of contents",
-    "type": "Table of contents",
-    "status": "Done",
-    "target": "29",
-    "limit": "24",
-    "reviewer": "Eddie Lake"
-  },
-  {
     "id": 3,
     "header": "Executive summary",
     "type": "Narrative",
@@ -153,15 +135,6 @@
     "reviewer": "Assign reviewer"
   },
   {
-    "id": 18,
-    "header": "Cost-Benefit Analysis",
-    "type": "Plain language",
-    "status": "Done",
-    "target": "14",
-    "limit": "38",
-    "reviewer": "Assign reviewer"
-  },
-  {
     "id": 19,
     "header": "User Training and Onboarding Experience",
     "type": "Narrative",
@@ -198,15 +171,6 @@
     "reviewer": "Carlos Rodriguez"
   },
   {
-    "id": 23,
-    "header": "Compliance Documentation",
-    "type": "Legal",
-    "status": "In Process",
-    "target": "31",
-    "limit": "27",
-    "reviewer": "Sarah Chen"
-  },
-  {
     "id": 24,
     "header": "API Documentation",
     "type": "Technical content",
@@ -214,15 +178,6 @@
     "target": "8",
     "limit": "12",
     "reviewer": "Raj Patel"
-  },
-  {
-    "id": 25,
-    "header": "User Interface Mockups",
-    "type": "Visual",
-    "status": "In Process",
-    "target": "19",
-    "limit": "25",
-    "reviewer": "Leila Ahmadi"
   },
   {
     "id": 26,
@@ -250,15 +205,6 @@
     "target": "26",
     "limit": "30",
     "reviewer": "Eddie Lake"
-  },
-  {
-    "id": 29,
-    "header": "Budget Breakdown",
-    "type": "Financial",
-    "status": "In Process",
-    "target": "13",
-    "limit": "16",
-    "reviewer": "Jamik Tashpulatov"
   },
   {
     "id": 30,
@@ -295,15 +241,6 @@
     "target": "27",
     "limit": "24",
     "reviewer": "Nina Patel"
-  },
-  {
-    "id": 34,
-    "header": "Accessibility Compliance",
-    "type": "Legal",
-    "status": "Done",
-    "target": "18",
-    "limit": "21",
-    "reviewer": "Assign reviewer"
   },
   {
     "id": 35,
@@ -396,15 +333,6 @@
     "reviewer": "Assign reviewer"
   },
   {
-    "id": 45,
-    "header": "Intellectual Property Rights",
-    "type": "Legal",
-    "status": "In Process",
-    "target": "17",
-    "limit": "20",
-    "reviewer": "Sarah Johnson"
-  },
-  {
     "id": 46,
     "header": "Customer Support Framework",
     "type": "Narrative",
@@ -430,15 +358,6 @@
     "target": "26",
     "limit": "29",
     "reviewer": "Michael Chen"
-  },
-  {
-    "id": 49,
-    "header": "Regulatory Compliance",
-    "type": "Legal",
-    "status": "In Process",
-    "target": "13",
-    "limit": "16",
-    "reviewer": "Assign reviewer"
   },
   {
     "id": 50,
@@ -475,51 +394,6 @@
     "target": "29",
     "limit": "32",
     "reviewer": "Lisa Wong"
-  },
-  {
-    "id": 54,
-    "header": "Project Timeline",
-    "type": "Planning",
-    "status": "Done",
-    "target": "14",
-    "limit": "17",
-    "reviewer": "Eddie Lake"
-  },
-  {
-    "id": 55,
-    "header": "Resource Allocation",
-    "type": "Planning",
-    "status": "In Process",
-    "target": "27",
-    "limit": "30",
-    "reviewer": "Assign reviewer"
-  },
-  {
-    "id": 56,
-    "header": "Team Structure and Roles",
-    "type": "Planning",
-    "status": "Done",
-    "target": "20",
-    "limit": "23",
-    "reviewer": "Jamik Tashpulatov"
-  },
-  {
-    "id": 57,
-    "header": "Communication Protocols",
-    "type": "Planning",
-    "status": "In Process",
-    "target": "15",
-    "limit": "18",
-    "reviewer": "Assign reviewer"
-  },
-  {
-    "id": 58,
-    "header": "Success Metrics",
-    "type": "Planning",
-    "status": "Done",
-    "target": "30",
-    "limit": "33",
-    "reviewer": "Eddie Lake"
   },
   {
     "id": 59,
@@ -567,24 +441,6 @@
     "reviewer": "Jamik Tashpulatov"
   },
   {
-    "id": 64,
-    "header": "Release Management Process",
-    "type": "Planning",
-    "status": "Done",
-    "target": "22",
-    "limit": "25",
-    "reviewer": "Assign reviewer"
-  },
-  {
-    "id": 65,
-    "header": "Feature Prioritization Matrix",
-    "type": "Planning",
-    "status": "In Process",
-    "target": "19",
-    "limit": "22",
-    "reviewer": "Emma Davis"
-  },
-  {
     "id": 66,
     "header": "Technical Debt Assessment",
     "type": "Technical content",
@@ -592,23 +448,5 @@
     "target": "24",
     "limit": "27",
     "reviewer": "Eddie Lake"
-  },
-  {
-    "id": 67,
-    "header": "Capacity Planning",
-    "type": "Planning",
-    "status": "In Process",
-    "target": "21",
-    "limit": "24",
-    "reviewer": "Jamik Tashpulatov"
-  },
-  {
-    "id": 68,
-    "header": "Service Level Agreements",
-    "type": "Legal",
-    "status": "Done",
-    "target": "26",
-    "limit": "29",
-    "reviewer": "Assign reviewer"
   }
 ]
