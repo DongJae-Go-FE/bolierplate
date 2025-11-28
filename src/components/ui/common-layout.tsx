@@ -10,6 +10,9 @@ import {
   BreadcrumbSeparator,
 } from "@hdc-ui/components/ui/breadcrumb";
 
+import { Spinner } from "@hdc-ui/components/ui/spinner";
+import { Empty } from "@hdc-ui/components/ui/empty";
+
 import { House } from "lucide-react";
 
 import { cn } from "@hdc-ui/utils";
@@ -98,4 +101,28 @@ export function SectionBreadcrumb({
       </BreadcrumbList>
     </Breadcrumb>
   );
+}
+
+export function ContentRender(props: {
+  isLoading: boolean;
+  isEmpty?: boolean;
+  children: React.ReactNode;
+}) {
+  if (props.isLoading) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (props.isEmpty) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Empty size="lg" icon="warning" description="데이터가 없습니다." />
+      </div>
+    );
+  }
+
+  return props.children;
 }

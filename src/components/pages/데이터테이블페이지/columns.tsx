@@ -2,11 +2,12 @@ import { ColumnDef } from "@tanstack/react-table";
 
 import { Checkbox } from "@hdc-ui/components/ui/checkbox";
 
-import { TableToggleButton } from "@/components/ui/table-toggle-button";
 import {
   TableStatusUpDownText,
   TableStatusText,
-} from "@/components/ui/table-status-text";
+  TableLinkText,
+  TableToggleButton,
+} from "@/components/ui/common-table";
 
 import { RES_TABLE_TYPE } from "@/lib/network/types";
 
@@ -53,6 +54,13 @@ const Columns: ColumnDef<RES_TABLE_TYPE["data"][number]>[] = [
   {
     accessorKey: "header",
     header: "Header",
+    cell: ({ row }) => {
+      return (
+        <TableLinkText href={`/data-table/${row.original.id}`}>
+          {row.original.header}
+        </TableLinkText>
+      );
+    },
   },
   {
     accessorKey: "type",
@@ -80,6 +88,7 @@ const Columns: ColumnDef<RES_TABLE_TYPE["data"][number]>[] = [
   {
     accessorKey: "status",
     header: "Status",
+
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       return (
