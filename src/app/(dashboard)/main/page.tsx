@@ -1,6 +1,6 @@
 import { Section, SectionTitle } from "@/components/ui/common-layout";
 
-import Main from "@/components/pages/메인";
+import Main from "@/components/pages/main-page";
 
 import { SectionBreadcrumb } from "@/components/ui/common-layout";
 

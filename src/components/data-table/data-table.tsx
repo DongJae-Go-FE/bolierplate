@@ -119,7 +119,7 @@ export default function DataTable<T>({
         >
           <Table>
             <TableCaption>{caption}</TableCaption>
-            <TableHeader className={cn(isSticky && "sticky -top-[1px] z-10")}>
+            <TableHeader className={cn(isSticky && "sticky -top-[px] z-10")}>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (

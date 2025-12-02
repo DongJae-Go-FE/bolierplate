@@ -11,7 +11,7 @@ import {
 
 import { RES_TABLE_TYPE } from "@/lib/network/types";
 
-const Columns: ColumnDef<RES_TABLE_TYPE["data"][number]>[] = [
+const Columns: ColumnDef<RES_TABLE_TYPE["data"]>[] = [
   {
     id: "select",
     header: ({ table }) => (
