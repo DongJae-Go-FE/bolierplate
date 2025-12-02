@@ -12,6 +12,8 @@ import {
   SortingState,
   getSortedRowModel,
   getPaginationRowModel,
+  RowSelectionState,
+  OnChangeFn,
 } from "@tanstack/react-table";
 
 import {
@@ -47,6 +49,8 @@ type DataTableProps<T> = {
   pageSize?: number;
   totalCount: number;
   onPageChange?: () => void;
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
   isLoading?: boolean;
 };
 
@@ -58,6 +62,8 @@ export default function DataTable<T>({
   totalCount,
   pageSize = 10,
   isLoading = false,
+  rowSelection,
+  onRowSelectionChange,
 }: DataTableProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -70,8 +76,10 @@ export default function DataTable<T>({
     getPaginationRowModel: getPaginationRowModel(),
     //manualPagination: true, 서버 사이드 페이지네이션
     onSortingChange: setSorting,
+    onRowSelectionChange: onRowSelectionChange,
     state: {
       sorting,
+      rowSelection,
     },
     initialState: {
       pagination: {

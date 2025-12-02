@@ -58,6 +58,22 @@ export function FilterReset({
     />
   );
 }
+export function FilterSearch({
+  className,
+  ...props
+}: ComponentProps<typeof IconButton>) {
+  return (
+    <IconButton
+      className={cn(
+        "rounded-md border border-gray-200 [&_svg]:size-4",
+        className,
+      )}
+      size="md"
+      icon="Search"
+      {...props}
+    />
+  );
+}
 
 export function CommonFilter(props: {
   value: string;

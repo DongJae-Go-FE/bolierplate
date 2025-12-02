@@ -26,7 +26,9 @@
  * @property {T[]} data - 응답 데이터 배열
  */
 export type CommonResponse<T = unknown> = {
-  data: T[];
+  data: T;
+  success: string;
+  msg: string;
 };
 
 /**
@@ -35,7 +37,9 @@ export type CommonResponse<T = unknown> = {
  * @property {string} example - 예제 필드
  */
 export type REQ_EXAMPLE_TYPE = {
-  example: string;
+  search: string;
+  value: string;
+  valueTwo: string;
 };
 
 /**
