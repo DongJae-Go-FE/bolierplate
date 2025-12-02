@@ -15,26 +15,8 @@ import {
   FilterReset,
 } from "@/components/ui/filter";
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogTitle,
-} from "@hdc-ui/components/ui/alert-dialog";
-
-import {
-  Modal,
-  ModalHeader,
-  ModalTitle,
-  ModalContent,
-  ModalDescription,
-  ModalFooter,
-  ModalClose,
-  ModalCloseIconButton,
-  ModalTrigger,
-} from "@hdc-ui/components/ui/modal";
+import Alert from "@/components/ui/alert";
+import Modal from "@/components/ui/modal";
 
 import { Input } from "@hdc-ui/components/ui/input";
 
@@ -50,6 +32,7 @@ import HttpRequest from "@/lib/network/http-request";
 import useFilter from "@/hooks/use-filter";
 
 import { REQ_EXAMPLE_TYPE } from "@/lib/network/types";
+import { CONST_SOLUTION_NAME, CONST_SEARCH_PLACEHOLDER } from "@/lib/const";
 
 import sampleData from "./data.json";
 
@@ -119,7 +102,7 @@ export default function TablePage() {
               });
             }}
             className="w-80"
-            placeholder="검색어를 입력해주세요."
+            placeholder={CONST_SEARCH_PLACEHOLDER}
           />
           <SampleFirstFilter
             value={filter.valueTwo}
@@ -135,91 +118,55 @@ export default function TablePage() {
         </FilterContainer>
 
         <FilterContainer>
-          <Modal>
-            <ModalTrigger asChild>
-              <Button
-                type="button"
-                color="outlined"
-                disabled={JSON.stringify(rowSelection) === "{}"}
-              >
-                삭제
-              </Button>
-            </ModalTrigger>
-            <ModalContent>
-              <ModalHeader>
-                <ModalTitle>솔루션 명</ModalTitle>
-                <ModalCloseIconButton />
-              </ModalHeader>
-              <ModalDescription>리스트를 삭제하시겠습니까?</ModalDescription>
-              <ModalFooter>
-                <ModalClose asChild>
-                  <Button type="button" color="outlined">
-                    닫기
-                  </Button>
-                </ModalClose>
-                <ModalClose asChild>
-                  <Button type="button" color="gray" onClick={handleDelete}>
-                    삭제
-                  </Button>
-                </ModalClose>
-              </ModalFooter>
-            </ModalContent>
+          <Modal
+            title={CONST_SOLUTION_NAME}
+            description="리스트를 삭제하시겠습니까?"
+            actions={{
+              primary: {
+                title: "삭제",
+                onClick: handleDelete,
+              },
+            }}
+          >
+            <Button
+              type="button"
+              color="outlined"
+              disabled={JSON.stringify(rowSelection) === "{}"}
+            >
+              삭제
+            </Button>
           </Modal>
+
           <Button type="button" color="gray">
             등록
           </Button>
         </FilterContainer>
       </Filter>
       <DataTable
-        caption="테이터 테이블 예제 테이블"
+        caption="데이터 테이블 예제 테이블"
         columns={Columns}
         data={sampleData}
         totalCount={sampleData.length}
         rowSelection={rowSelection}
         onRowSelectionChange={setRowSelection}
       />
-      <AlertDialog open={isSuccess} onOpenChange={setIsSuccess}>
-        <AlertDialogContent>
-          <AlertDialogTitle>솔루션 명</AlertDialogTitle>
-          <AlertDialogDescription>등록에 성공했습니다.</AlertDialogDescription>
-          <AlertDialogFooter>
-            <AlertDialogAction asChild>
-              <Button
-                className="w-30"
-                color="outlined"
-                autoFocus
-                onClick={() => {
-                  setIsSuccess(false);
-                }}
-              >
-                확인
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog open={deleteMutation.isError}>
-        <AlertDialogContent>
-          <AlertDialogTitle>솔루션 명</AlertDialogTitle>
-          <AlertDialogDescription>
-            {deleteMutation.error?.message}
-          </AlertDialogDescription>
-          <AlertDialogFooter>
-            <AlertDialogAction asChild>
-              <Button
-                className="w-30"
-                color="outlined"
-                autoFocus
-                onClick={() => {
-                  deleteMutation.reset();
-                }}
-              >
-                확인
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Alert
+        title={CONST_SOLUTION_NAME}
+        description="등록에 성공했습니다."
+        open={isSuccess}
+        onOpenChange={setIsSuccess}
+        onClick={() => {
+          setIsSuccess(false);
+        }}
+      />
+      <Alert
+        title={CONST_SOLUTION_NAME}
+        description={deleteMutation.error?.message || ""}
+        open={deleteMutation.isError}
+        onClick={() => {
+          deleteMutation.reset();
+        }}
+      />
     </>
   );
 }
