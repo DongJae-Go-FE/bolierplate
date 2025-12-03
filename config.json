@@ -1,0 +1,4 @@
+{
+  "swaggerUrl": "api-url/v3/api-docs",
+  "outputDir": "src/api/generated"
+}

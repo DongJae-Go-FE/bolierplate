@@ -1,3 +1,7 @@
 [submodule "hdc-ui"]
 	path = hdc-ui
 	url = https://bitbucket.org/hdclabs/hdc-ui.git
+	
+[submodule "swagger-parser"]
+	path = swagger-parser
+	url = https://bitbucket.org/hdclabs/swagger-parser.git
