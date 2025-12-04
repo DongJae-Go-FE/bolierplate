@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { useState } from "react";
 
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -37,6 +39,8 @@ import { CONST_SOLUTION_NAME, CONST_SEARCH_PLACEHOLDER } from "@/lib/const";
 import sampleData from "./data.json";
 
 export default function TablePage() {
+  const { push } = useRouter();
+
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -137,7 +141,13 @@ export default function TablePage() {
             </Button>
           </Modal>
 
-          <Button type="button" color="gray">
+          <Button
+            type="button"
+            color="gray"
+            onClick={() => {
+              push("/data-table/add");
+            }}
+          >
             등록
           </Button>
         </FilterContainer>

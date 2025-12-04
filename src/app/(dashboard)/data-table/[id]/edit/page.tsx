@@ -1,9 +1,9 @@
-import { Section, SectionTitle } from "@/components/ui/common-layout";
+import { PageContainer, PageTitle } from "@/components/ui/common-layout";
 
 export default function Page() {
   return (
-    <Section>
-      <SectionTitle>임시 타이틀</SectionTitle>
-    </Section>
+    <PageContainer>
+      <PageTitle>임시 타이틀</PageTitle>
+    </PageContainer>
   );
 }

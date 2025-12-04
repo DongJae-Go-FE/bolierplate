@@ -17,22 +17,19 @@ import { House } from "lucide-react";
 
 import { cn } from "@hdc-ui/utils";
 
-export function Section({
+export function PageContainer({
   className,
   children,
   ...props
-}: ComponentProps<"section">) {
+}: ComponentProps<"div">) {
   return (
-    <section
-      className={cn("flex h-full w-full flex-col", className)}
-      {...props}
-    >
+    <div className={cn("flex h-full w-full flex-col", className)} {...props}>
       {children}
-    </section>
+    </div>
   );
 }
 
-export function SectionTitle({
+export function PageTitle({
   className,
   children,
   ...props
@@ -50,7 +47,7 @@ export function SectionTitle({
   );
 }
 
-export function SectionBreadcrumb({
+export function PageBreadcrumb({
   className,
   children,
   items,
@@ -103,40 +100,37 @@ export function SectionBreadcrumb({
   );
 }
 
-export function DetailSection({
+export function SectionContainer({
   className,
   children,
   ...props
-}: ComponentProps<"div">) {
+}: ComponentProps<"section">) {
   return (
-    <div
-      className={cn("flex w-full flex-col gap-y-4 bg-white", className)}
+    <section
+      className={cn(
+        "flex w-full flex-col gap-y-4 bg-white not-last-of-type:mb-4",
+        className,
+      )}
       {...props}
     >
       {children}
-    </div>
+    </section>
   );
 }
 
-export function DetailTitle({
+export function SectionTitle({
   className,
   children,
   ...props
 }: ComponentProps<"h3">) {
   return (
-    <h3
-      className={cn(
-        "body01B border-b border-gray-200 py-2 text-gray-900",
-        className,
-      )}
-      {...props}
-    >
-      - {children}
+    <h3 className={cn("body01B text-gray-900", className)} {...props}>
+      {children}
     </h3>
   );
 }
 
-export function DetailContent({
+export function SectionContent({
   className,
   children,
   ...props
@@ -151,7 +145,7 @@ export function DetailContent({
   );
 }
 
-export function DetailFooter({
+export function BtnArea({
   className,
   children,
   ...props

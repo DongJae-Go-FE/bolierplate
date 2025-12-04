@@ -1,4 +1,5 @@
+
 {
-  "swaggerUrl": "api-url/v3/api-docs",
-  "outputDir": "src/api/generated"
+  "swaggerUrl": "swagger-url-example/v3/api-docs",
+  "outputDir": "src/lib/network/api"
 }

@@ -1,14 +1,12 @@
 "use client";
 
-import Link from "next/link";
-
 import dynamic from "next/dynamic";
 
 import {
-  DetailSection,
-  DetailContent,
-  DetailTitle,
-  DetailFooter,
+  SectionContainer,
+  SectionTitle,
+  SectionContent,
+  BtnArea,
   LinkButton,
 } from "@/components/ui/common-layout";
 
@@ -27,17 +25,19 @@ const SafeHtml = dynamic(() => import("@/components/safe-html"), {
 
 export default function Detail(props: { id: string }) {
   return (
-    <DetailSection>
-      <DetailTitle>상세 페이지 타이틀 {props.id}</DetailTitle>
-      <DetailContent>
+    <SectionContainer>
+      <SectionTitle className="border-b border-gray-200">
+        상세 페이지 타이틀 {props.id}
+      </SectionTitle>
+      <SectionContent>
         <SafeHtml html="<p>여기는 상세 페이지 내용이 들어가는 곳입니다.</p><p>HTML 콘텐츠를 안전하게 렌더링합니다.</p>" />
-      </DetailContent>
-      <DetailFooter>
+      </SectionContent>
+      <BtnArea>
         <Button type="button" color="outlined">
           삭제
         </Button>
         <LinkButton href="/data-table">목록</LinkButton>
-      </DetailFooter>
-    </DetailSection>
+      </BtnArea>
+    </SectionContainer>
   );
 }
