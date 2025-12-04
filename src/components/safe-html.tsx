@@ -18,10 +18,7 @@ export default function SafeHtml({ html, className }: SafeHtmlProps) {
 
   return (
     <div
-      className={cn(
-        "flex h-full w-full items-center justify-center",
-        className,
-      )}
+      className={cn("h-full w-full", className)}
       dangerouslySetInnerHTML={{ __html: cleanHtml }}
     />
   );

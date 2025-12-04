@@ -97,7 +97,7 @@ export default function SidebarContent() {
             {items2.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
-                  className={cn(pathname === item.url && "text-gray-900")}
+                  className={cn(pathname.includes(item.url) && "text-gray-900")}
                   asChild
                 >
                   <Link href={item.url}>

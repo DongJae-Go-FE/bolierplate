@@ -103,6 +103,90 @@ export function SectionBreadcrumb({
   );
 }
 
+export function DetailSection({
+  className,
+  children,
+  ...props
+}: ComponentProps<"div">) {
+  return (
+    <div
+      className={cn("flex w-full flex-col gap-y-4 bg-white", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function DetailTitle({
+  className,
+  children,
+  ...props
+}: ComponentProps<"h3">) {
+  return (
+    <h3
+      className={cn(
+        "body01B border-b border-gray-200 py-2 text-gray-900",
+        className,
+      )}
+      {...props}
+    >
+      - {children}
+    </h3>
+  );
+}
+
+export function DetailContent({
+  className,
+  children,
+  ...props
+}: ComponentProps<"div">) {
+  return (
+    <div
+      className={cn("flex h-160 w-full flex-col text-gray-900", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function DetailFooter({
+  className,
+  children,
+  ...props
+}: ComponentProps<"div">) {
+  return (
+    <div
+      className={cn(
+        "flex w-full items-center justify-end gap-x-1 border-t border-gray-200 py-2",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function LinkButton({
+  className,
+  children,
+  ...props
+}: ComponentProps<typeof Link>) {
+  return (
+    <Link
+      className={cn(
+        "body02M inline-flex h-10 cursor-pointer items-center rounded-sm bg-gray-900 px-6 text-white",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </Link>
+  );
+}
+
 export function ContentRender(props: {
   isLoading: boolean;
   isEmpty?: boolean;

@@ -1,12 +1,9 @@
 import { Section, SectionTitle } from "@/components/ui/common-layout";
 
-import DataTablePage from "@/components/pages/list-page";
-
 export default function Page() {
   return (
     <Section>
-      <SectionTitle>데이터 테이블 타이틀</SectionTitle>
-      <DataTablePage />
+      <SectionTitle>임시 타이틀</SectionTitle>
     </Section>
   );
 }
