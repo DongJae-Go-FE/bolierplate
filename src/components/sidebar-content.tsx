@@ -31,34 +31,6 @@ import { cn } from "@hdc-ui/utils";
 
 const items = [
   {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-];
-
-const items2 = [
-  {
     title: "메인",
     url: "/main",
     icon: Home,
@@ -90,26 +62,6 @@ export default function SidebarContent() {
 
   return (
     <SidebarContentContainer>
-      <SidebarGroup>
-        <SidebarGroupLabel>페이지</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {items2.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  className={cn(pathname.includes(item.url) && "text-gray-900")}
-                  asChild
-                >
-                  <Link href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
       <Collapsible defaultOpen className="group/collapsible">
         <SidebarGroup>
           <SidebarGroupLabel asChild>
@@ -123,7 +75,12 @@ export default function SidebarContent() {
               <SidebarMenu>
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
+                    <SidebarMenuButton
+                      className={cn(
+                        pathname.includes(item.url) && "text-gray-900",
+                      )}
+                      asChild
+                    >
                       <a href={item.url}>
                         <item.icon />
                         <span>{item.title}</span>

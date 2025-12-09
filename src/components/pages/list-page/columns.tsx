@@ -9,9 +9,19 @@ import {
   TableToggleButton,
 } from "@/components/ui/common-table";
 
-import { RES_TABLE_TYPE } from "@/lib/network/types";
+import { CommonResponse } from "@/lib/network/custom-fetch";
 
-const Columns: ColumnDef<RES_TABLE_TYPE["data"]>[] = [
+const Columns: ColumnDef<
+  CommonResponse<{
+    id: number;
+    header: string;
+    type: string;
+    status: string;
+    target: string;
+    limit: string;
+    reviewer: string;
+  }>["data"]
+>[] = [
   {
     id: "select",
     header: ({ table }) => (

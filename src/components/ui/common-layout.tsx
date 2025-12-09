@@ -137,7 +137,7 @@ export function SectionContent({
 }: ComponentProps<"div">) {
   return (
     <div
-      className={cn("flex h-160 w-full flex-col text-gray-900", className)}
+      className={cn("flex min-h-160 w-full flex-col text-gray-900", className)}
       {...props}
     >
       {children}
@@ -165,13 +165,19 @@ export function BtnArea({
 
 export function LinkButton({
   className,
+  color = "gray",
   children,
   ...props
-}: ComponentProps<typeof Link>) {
+}: ComponentProps<typeof Link> & {
+  color?: "gray" | "outlined";
+}) {
   return (
     <Link
       className={cn(
-        "body02M inline-flex h-10 cursor-pointer items-center rounded-sm bg-gray-900 px-6 text-white",
+        "body02M inline-flex h-10 cursor-pointer items-center rounded-sm px-6",
+        color === "gray"
+          ? "bg-gray-900 text-white"
+          : "border border-gray-200 bg-white text-gray-900",
         className,
       )}
       {...props}

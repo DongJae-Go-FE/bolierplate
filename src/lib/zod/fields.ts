@@ -9,3 +9,19 @@ export const PasswordField = z
   .string()
   .min(4, { message: "비밀번호는 최소 4자 이상 입력해야 합니다." })
   .trim();
+
+export const PowerField = z
+  .string()
+  .nonempty({ message: "권한은 필수로 입력해야 합니다." })
+  .trim();
+
+export const PowerSelectField = z
+  .string()
+  .nonempty({ message: "권한을 선택해야 합니다." });
+
+export const ContentsField = z
+  .string()
+  .nonempty({ message: "내용은 필수로 입력해야 합니다." })
+  .trim();
+
+export const FileField = z.string().optional();

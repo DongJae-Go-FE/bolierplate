@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import queryString from "querystring";
 
 export default function useFilter<T extends Record<string, string | number>>({
@@ -20,6 +20,14 @@ export default function useFilter<T extends Record<string, string | number>>({
 
   const [filter, setFilter] = useState<T>(getInitialFilter);
   const [query, setQuery] = useState<T>(getInitialFilter);
+
+  useEffect(() => {
+    const hasQueryParams = searchParams.toString().length > 0;
+
+    if (!hasQueryParams) {
+      replace(`${pathName}?${queryString.stringify(initialState)}`);
+    }
+  }, []);
 
   const handleFilterSubmit = () => {
     setQuery({ ...filter });

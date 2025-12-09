@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 
 import { useState } from "react";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
+//import { useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 
 import DataTable from "@/components/data-table/data-table";
 
@@ -24,16 +25,14 @@ import { Input } from "@hdc-ui/components/ui/input";
 
 import { Button } from "@hdc-ui/components/ui/button";
 
-import { GET_EXAMPLE_REQUEST, QueryKey } from "@/lib/network/api";
-
 import { RowSelectionState } from "@tanstack/react-table";
 
 import Columns from "./columns";
 
-import HttpRequest from "@/lib/network/http-request";
+import { customFetch } from "@/lib/network/custom-fetch";
+
 import useFilter from "@/hooks/use-filter";
 
-import { REQ_EXAMPLE_TYPE } from "@/lib/network/types";
 import { CONST_SOLUTION_NAME, CONST_SEARCH_PLACEHOLDER } from "@/lib/const";
 
 import sampleData from "./data.json";
@@ -45,7 +44,11 @@ export default function TablePage() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const { filter, setFilter, handleFilterSubmit, handleFilterReset, query } =
-    useFilter<REQ_EXAMPLE_TYPE>({
+    useFilter<{
+      search: string;
+      value: string;
+      valueTwo: string;
+    }>({
       initialState: {
         search: "",
         value: "전체",
@@ -54,21 +57,23 @@ export default function TablePage() {
     });
 
   //data, isLoading 추가
-  const { refetch } = useQuery({
-    queryKey: [QueryKey.EXAMPLE, query],
-    queryFn: () => GET_EXAMPLE_REQUEST({ ...filter }),
-  });
+  // const { refetch } = useQuery({
+  //   queryKey: [QueryKey.EXAMPLE, query],
+  //   queryFn: () => 함수명({ ...filter }),
+  // });
 
   const deleteMutation = useMutation({
     mutationKey: ["deleteExample"],
     mutationFn: async (payload: RowSelectionState) => {
-      const res = await HttpRequest.set<
-        { message: "응답 성공" },
-        RowSelectionState
-      >("DELETE", `/api/example`, payload);
+      const res = await customFetch(`/api/example`, {
+        method: "delete",
+        body: JSON.stringify(payload),
+      });
 
-      if (!res.success) {
-        throw new Error(res.msg);
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.msg);
       }
 
       return res;
@@ -76,7 +81,7 @@ export default function TablePage() {
 
     onSuccess: () => {
       setIsSuccess(true);
-      refetch();
+      //refetch();
     },
   });
 
