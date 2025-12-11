@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import {
   Modal as ModalDialog,
@@ -15,9 +15,11 @@ import {
 import { Button } from "@hdc-ui/components/ui/button";
 
 export default function Modal(props: {
-  children: ReactNode;
+  children?: ReactNode;
   title: string;
   description: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   actions?: {
     primary: {
       title: string;
@@ -26,8 +28,8 @@ export default function Modal(props: {
   };
 }) {
   return (
-    <ModalDialog>
-      <ModalTrigger asChild>{props.children}</ModalTrigger>
+    <ModalDialog open={props.open} onOpenChange={props.onOpenChange}>
+      {props.children && <ModalTrigger asChild>{props.children}</ModalTrigger>}
       <ModalContent>
         <ModalHeader>
           <ModalTitle>{props.title}</ModalTitle>

@@ -24,4 +24,15 @@ export const ContentsField = z
   .nonempty({ message: "내용은 필수로 입력해야 합니다." })
   .trim();
 
-export const FileField = z.string().optional();
+export const FileField = z
+  .array(z.instanceof(File))
+  .optional()
+  .refine((files) => !files || files.length <= 10, {
+    message: "파일은 최대 5개까지 업로드할 수 있습니다.",
+  })
+  .refine(
+    (files) => !files || files.every((file) => file.size <= 10 * 1024 * 1024),
+    {
+      message: "파일 크기는 최대 MB까지 가능합니다.",
+    },
+  );

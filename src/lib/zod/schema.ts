@@ -20,7 +20,7 @@ export const PasswordChangeSchema = z.object({
   newPasswordOneMore: PasswordField,
 });
 
-export const AddPageSchema = z.object({
+export const PageSchema = z.object({
   id: IdField,
   power: PowerField,
   power2: PowerSelectField,

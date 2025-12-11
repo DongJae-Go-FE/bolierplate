@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 
 import z from "zod";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 import {
   SectionContainer,
@@ -53,7 +53,7 @@ import { cn } from "@hdc-ui/utils";
 
 import { CONST_SOLUTION_NAME } from "@/lib/const";
 
-export default function Add() {
+export default function Edit(props: { id: string }) {
   const [isModal, setIsModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -74,6 +74,33 @@ export default function Add() {
     upload1?: string[];
     upload2?: string[];
   }>({});
+
+  const { data: existingData } = useQuery({
+    queryKey: ["getExample", props.id],
+    queryFn: async () => {
+      const res = await customFetch(`/api/example/${props.id}`, {
+        method: "GET",
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.msg);
+      }
+      return data.data;
+    },
+  });
+
+  useEffect(() => {
+    if (existingData) {
+      setFormDataObj({
+        id: existingData.id || "",
+        power: existingData.power || "",
+        power2: existingData.power2 || "",
+        contents: existingData.contents || "",
+        upload1: existingData.upload1 || [],
+        upload2: existingData.upload2 || [],
+      });
+    }
+  }, [existingData]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormDataObj((prev) => ({
@@ -137,11 +164,11 @@ export default function Add() {
     setErrors({});
   };
 
-  const postMutation = useMutation({
-    mutationKey: ["postExample"],
+  const updateMutation = useMutation({
+    mutationKey: ["updateExample", props.id],
     mutationFn: async (payload: z.infer<typeof PageSchema>) => {
-      const res = await customFetch(`/api/example`, {
-        method: "POST",
+      const res = await customFetch(`/api/example/${props.id}`, {
+        method: "PUT",
         body: JSON.stringify(payload),
       });
 
@@ -160,13 +187,13 @@ export default function Add() {
   });
 
   const handleSubmit = async () => {
-    await postMutation.mutateAsync(formDataObj);
+    await updateMutation.mutateAsync(formDataObj);
   };
 
   return (
     <FormRoot onSubmit={handleValid}>
       <SectionContainer>
-        <SectionTitle>등록 예시</SectionTitle>
+        <SectionTitle>수정 예시</SectionTitle>
         <SectionContent>
           <Table type="description" className="mb-4">
             <TableCaption>프로젝트 문서 목록</TableCaption>
@@ -323,23 +350,23 @@ export default function Add() {
           <LinkButton color="outlined" href="/data-table">
             취소
           </LinkButton>
-          <Button color="gray">등록</Button>
+          <Button color="gray">수정</Button>
         </BtnArea>
         <Modal
           title={CONST_SOLUTION_NAME}
-          description="등록하시겠습니까?"
+          description="수정하시겠습니까?"
           open={isModal}
           onOpenChange={setIsModal}
           actions={{
             primary: {
-              title: "등록하기",
+              title: "수정하기",
               onClick: handleSubmit,
             },
           }}
         />
         <Alert
           title={CONST_SOLUTION_NAME}
-          description="등록에 성공했습니다."
+          description="수정에 성공했습니다."
           open={isSuccess}
           onOpenChange={setIsSuccess}
           onClick={() => {
@@ -348,10 +375,10 @@ export default function Add() {
         />
         <Alert
           title={CONST_SOLUTION_NAME}
-          description={postMutation.error?.message || ""}
-          open={postMutation.isError}
+          description={updateMutation.error?.message || ""}
+          open={updateMutation.isError}
           onClick={() => {
-            postMutation.reset();
+            updateMutation.reset();
           }}
         />
       </SectionContainer>

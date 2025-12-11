@@ -95,6 +95,7 @@ export default function Detail(props: { id: string }) {
             삭제
           </Button>
         </Modal>
+        <LinkButton href={`/data-table/${props.id}/edit`}>수정</LinkButton>
         <LinkButton href="/data-table">목록</LinkButton>
       </BtnArea>
       <Alert
