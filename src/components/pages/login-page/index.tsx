@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useState, FormEvent } from "react";
 
 import {
@@ -109,7 +111,7 @@ export default function Login() {
             </FormControl>
             {errors?.pw && <FormMessage>{errors.pw[0]}</FormMessage>}
           </FormField>
-          <div className="mt-4">
+          <div className="mt-4 flex items-center justify-between">
             <CheckboxButton
               id="storeSession"
               htmlFor="storeSession"
@@ -117,6 +119,12 @@ export default function Login() {
             >
               로그인 상태 유지
             </CheckboxButton>
+            <Link
+              href="/sign"
+              className="body02M text-gray-900 underline underline-offset-4"
+            >
+              회원가입
+            </Link>
           </div>
         </div>
         <Button className="mb-6 w-full" color="gray" size="xl">

@@ -36,3 +36,25 @@ export const FileField = z
       message: "파일 크기는 최대 MB까지 가능합니다.",
     },
   );
+
+export const EmailField = z
+  .string()
+  .nonempty({ message: "이메일은 필수로 입력해야 합니다." })
+  .email({ message: "올바른 이메일 형식이 아닙니다." })
+  .trim();
+
+export const NameField = z
+  .string()
+  .nonempty({ message: "이름은 필수로 입력해야 합니다." })
+  .min(2, { message: "이름은 최소 2자 이상 입력해야 합니다." })
+  .trim();
+
+export const DepartmentField = z
+  .string()
+  .nonempty({ message: "소속은 필수로 입력해야 합니다." })
+  .trim();
+
+export const EmployeeNumberField = z
+  .string()
+  .nonempty({ message: "사번은 필수로 입력해야 합니다." })
+  .trim();

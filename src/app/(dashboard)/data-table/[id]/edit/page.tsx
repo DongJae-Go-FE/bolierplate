@@ -7,7 +7,7 @@ export default function Page(params: { id: string }) {
   return (
     <PageContainer>
       <PageTitle>임시 타이틀</PageTitle>
-      <Edit id={params.id} />
+      <Edit id={id} />
     </PageContainer>
   );
 }

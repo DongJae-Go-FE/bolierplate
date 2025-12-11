@@ -7,6 +7,10 @@ import {
   PowerSelectField,
   ContentsField,
   FileField,
+  EmailField,
+  NameField,
+  DepartmentField,
+  EmployeeNumberField,
 } from "./fields";
 
 export const LoginSchema = z.object({
@@ -28,3 +32,18 @@ export const PageSchema = z.object({
   upload1: FileField,
   upload2: FileField,
 });
+
+export const SignupSchema = z
+  .object({
+    id: IdField,
+    password: PasswordField,
+    passwordConfirm: PasswordField,
+    email: EmailField,
+    name: NameField,
+    department: DepartmentField,
+    employeeNumber: EmployeeNumberField,
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "비밀번호가 일치하지 않습니다.",
+    path: ["passwordConfirm"],
+  });

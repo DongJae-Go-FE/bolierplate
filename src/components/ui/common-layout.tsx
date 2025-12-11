@@ -23,7 +23,7 @@ export function PageContainer({
   ...props
 }: ComponentProps<"div">) {
   return (
-    <div className={cn("flex h-full w-full flex-col", className)} {...props}>
+    <div className={cn("flex w-full flex-col", className)} {...props}>
       {children}
     </div>
   );
@@ -191,10 +191,16 @@ export function ContentRender(props: {
   isLoading: boolean;
   isEmpty?: boolean;
   children: React.ReactNode;
+  className?: string;
 }) {
   if (props.isLoading) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
+      <div
+        className={cn(
+          "flex h-full w-full items-center justify-center",
+          props.className,
+        )}
+      >
         <Spinner size="lg" />
       </div>
     );
@@ -202,7 +208,12 @@ export function ContentRender(props: {
 
   if (props.isEmpty) {
     return (
-      <div className="flex h-full w-full items-center justify-center">
+      <div
+        className={cn(
+          "flex h-full w-full items-center justify-center",
+          props.className,
+        )}
+      >
         <Empty size="lg" icon="warning" description="데이터가 없습니다." />
       </div>
     );
