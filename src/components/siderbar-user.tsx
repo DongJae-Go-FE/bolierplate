@@ -1,6 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { SidebarFooter, useSidebar } from "@/components/sidebar";
+import { useAuth } from "@/components/common-provider";
 
 import {
   DropdownMenu,
@@ -17,7 +20,10 @@ import { IconButton } from "@hdc-ui/components/ui/icon-button";
 import { User } from "lucide-react";
 
 export default function SidebarUser() {
+  const { replace } = useRouter();
+
   const { isMobile } = useSidebar();
+  const { logout, user } = useAuth();
 
   return (
     <SidebarFooter>
@@ -25,8 +31,10 @@ export default function SidebarUser() {
         <User className="size-5" />
       </div>
       <div className="body03M">
-        <p>작업자(id)</p>
-        <p className="block max-w-[150px] truncate">anonymous@hdc-labs.com</p>
+        <p>
+          {user?.name}({user?.userId})
+        </p>
+        <p className="block max-w-[150px] truncate">{user?.email}</p>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -40,18 +48,27 @@ export default function SidebarUser() {
         >
           <DropdownMenuLabel>
             <div className="body03M">
-              <p>작업자</p>
-              <p>anonymous@hdc-labs.com</p>
+              <p>
+                {user?.name}({user?.userId})
+              </p>
+              <p>{user?.email}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>Account</DropdownMenuItem>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
-            <DropdownMenuItem>Notifications</DropdownMenuItem>
+            <DropdownMenuItem>탭1</DropdownMenuItem>
+            <DropdownMenuItem>탭2</DropdownMenuItem>
+            <DropdownMenuItem>탭3</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Log out</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={async () => {
+              await logout();
+              replace("/login");
+            }}
+          >
+            로그아웃
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </SidebarFooter>

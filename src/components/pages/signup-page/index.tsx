@@ -14,12 +14,15 @@ import {
 } from "@hdc-ui/components/ui/alert-dialog";
 import { Button } from "@hdc-ui/components/ui/button";
 import { Input } from "@hdc-ui/components/ui/input";
+import { Spinner } from "@hdc-ui/components/ui/spinner";
 
 import { FormRoot, FormControl, FormField, FormMessage } from "../../ui/form";
 
 import { cn } from "@hdc-ui/utils";
 
 import { SignupSchema } from "../../../lib/zod/schema";
+import { signupAction } from "@/lib/serverActions/sever-actions";
+import { useMutation } from "@tanstack/react-query";
 
 export default function SignUp() {
   const { push } = useRouter();
@@ -45,6 +48,32 @@ export default function SignUp() {
   }>({});
 
   const [isSuccess, setIsSuccess] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  //TODO. MSW MOCK DATA라 교체해야함
+  const signupMutation = useMutation({
+    mutationKey: ["signup"],
+    mutationFn: async (data: typeof formDataObj) => {
+      return signupAction(data);
+    },
+    onSuccess: (result) => {
+      if (!result.success) {
+        setServerError(result.message || "회원가입에 실패했습니다");
+        if (result.errors) {
+          setErrors((prev) => ({ ...prev, ...result.errors }));
+        }
+        setIsSuccess(false);
+        return;
+      }
+
+      setServerError(null);
+      setIsSuccess(true);
+    },
+    onError: () => {
+      setServerError("네트워크 오류가 발생했습니다");
+      setIsSuccess(false);
+    },
+  });
 
   const handleInputChange = (field: string, value: string) => {
     setFormDataObj((prev) => ({
@@ -79,15 +108,7 @@ export default function SignUp() {
     } else {
       setErrors({});
 
-      // TODO: POST 요청 로직 추가
-      // API 호출 예시:
-      // const response = await fetch('/api/signup', {
-      //   method: 'POST',
-      //   body: JSON.stringify(validatedFields.data),
-      // });
-
-      // 임시로 성공 메시지 표시
-      setIsSuccess(true);
+      signupMutation.mutate(validatedFields.data);
     }
   };
 
@@ -113,6 +134,7 @@ export default function SignUp() {
                 maxLength={20}
                 size="lg"
                 value={formDataObj.id}
+                disabled={signupMutation.isPending}
                 onChange={(e) => handleInputChange("id", e.target.value)}
               />
             </FormControl>
@@ -139,6 +161,7 @@ export default function SignUp() {
                 maxLength={20}
                 size="lg"
                 value={formDataObj.password}
+                disabled={signupMutation.isPending}
                 onChange={(e) => handleInputChange("password", e.target.value)}
               />
             </FormControl>
@@ -167,6 +190,7 @@ export default function SignUp() {
                 maxLength={20}
                 size="lg"
                 value={formDataObj.passwordConfirm}
+                disabled={signupMutation.isPending}
                 onChange={(e) =>
                   handleInputChange("passwordConfirm", e.target.value)
                 }
@@ -193,6 +217,7 @@ export default function SignUp() {
                 autoComplete="email"
                 size="lg"
                 value={formDataObj.email}
+                disabled={signupMutation.isPending}
                 onChange={(e) => handleInputChange("email", e.target.value)}
               />
             </FormControl>
@@ -216,6 +241,7 @@ export default function SignUp() {
                 maxLength={20}
                 size="lg"
                 value={formDataObj.name}
+                disabled={signupMutation.isPending}
                 onChange={(e) => handleInputChange("name", e.target.value)}
               />
             </FormControl>
@@ -241,6 +267,7 @@ export default function SignUp() {
                 maxLength={50}
                 size="lg"
                 value={formDataObj.department}
+                disabled={signupMutation.isPending}
                 onChange={(e) =>
                   handleInputChange("department", e.target.value)
                 }
@@ -270,6 +297,7 @@ export default function SignUp() {
                 maxLength={20}
                 size="lg"
                 value={formDataObj.employeeNumber}
+                disabled={signupMutation.isPending}
                 onChange={(e) =>
                   handleInputChange("employeeNumber", e.target.value)
                 }
@@ -281,14 +309,24 @@ export default function SignUp() {
           </FormField>
         </div>
 
-        <Button className="mb-2 w-full" color="gray" size="xl">
-          회원가입
+        {serverError && (
+          <p className="body02M mb-2 text-red-500">{serverError}</p>
+        )}
+
+        <Button
+          className="mb-2 flex w-full items-center justify-center"
+          color="gray"
+          size="xl"
+          disabled={signupMutation.isPending}
+        >
+          {signupMutation.isPending ? <Spinner /> : "회원가입"}
         </Button>
         <Button
           type="button"
           className="w-full"
           color="outlined"
           size="xl"
+          disabled={signupMutation.isPending}
           onClick={() => {
             push("/login");
           }}
@@ -309,7 +347,9 @@ export default function SignUp() {
                 className="w-30"
                 color="outlined"
                 autoFocus
-                onClick={() => setIsSuccess(false)}
+                onClick={() => {
+                  (setIsSuccess(false), push("/login"));
+                }}
               >
                 확인
               </Button>

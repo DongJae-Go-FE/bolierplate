@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, FormEvent, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-import z from "zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { customFetch } from "@/lib/network/custom-fetch";
 
 import {
   SectionContainer,
@@ -25,8 +26,6 @@ import {
 
 import { FormRoot, FormControl, FormField, FormMessage } from "../../ui/form";
 
-import { Textarea } from "@/components/ui/textarea";
-
 import { Input } from "@hdc-ui/components/ui/input";
 
 import {
@@ -41,74 +40,80 @@ import Upload from "@hdc-ui/components/upload/upload";
 import DragUpload from "@hdc-ui/components/upload/drag-upload";
 
 import { Button } from "@hdc-ui/components/ui/button";
+import { Spinner } from "@hdc-ui/components/ui/spinner";
 
 import Modal from "@/components/ui/modal";
 import Alert from "@/components/ui/alert";
 
-import { PageSchema } from "../../../lib/zod/schema";
-
-import { customFetch } from "@/lib/network/custom-fetch";
+import { ItemSchema } from "@/lib/zod/schema";
 
 import { cn } from "@hdc-ui/utils";
 
 import { CONST_SOLUTION_NAME } from "@/lib/const";
+import { z } from "zod";
+
+type ItemFormData = z.infer<typeof ItemSchema>;
 
 export default function Edit(props: { id: string }) {
+  const { push } = useRouter();
+  const queryClient = useQueryClient();
+
   const [isModal, setIsModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const [formDataObj, setFormDataObj] = useState({
-    id: "",
-    power: "",
-    power2: "",
-    contents: "",
-    upload1: [] as File[],
-    upload2: [] as File[],
+  const [formDataObj, setFormDataObj] = useState<ItemFormData>({
+    header: "",
+    type: "Narrative",
+    status: "In Process",
+    target: "",
+    limit: "",
+    reviewer: "",
+    upload1: [],
+    upload2: [],
   });
 
-  const [errors, setErrors] = useState<{
-    id?: string[];
-    power?: string[];
-    power2?: string[];
-    contents?: string[];
-    upload1?: string[];
-    upload2?: string[];
-  }>({});
+  const [errors, setErrors] = useState<z.ZodFormattedError<ItemFormData>>({
+    _errors: [],
+  });
 
-  const { data: existingData } = useQuery({
-    queryKey: ["getExample", props.id],
+  //TODO. MSW MOCK DATA라 교체해야함
+  const { data: existingData, isLoading } = useQuery({
+    queryKey: ["item", props.id],
     queryFn: async () => {
-      const res = await customFetch(`/api/example/${props.id}`, {
-        method: "GET",
-      });
+      const res = await customFetch(`/api/items/${props.id}`);
       const data = await res.json();
+
       if (!data.success) {
-        throw new Error(data.msg);
+        throw new Error(data.message || "데이터를 불러오는데 실패했습니다");
       }
+
       return data.data;
     },
   });
 
+  //TODO. MSW MOCK DATA라 교체해야함
   useEffect(() => {
     if (existingData) {
       setFormDataObj({
-        id: existingData.id || "",
-        power: existingData.power || "",
-        power2: existingData.power2 || "",
-        contents: existingData.contents || "",
-        upload1: existingData.upload1 || [],
-        upload2: existingData.upload2 || [],
+        header: existingData.header || "",
+        type: existingData.type || "Narrative",
+        status: existingData.status || "In Process",
+        target: existingData.target || "",
+        limit: existingData.limit || "",
+        reviewer: existingData.reviewer || "",
+        upload1: [],
+        upload2: [],
       });
     }
   }, [existingData]);
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: keyof ItemFormData, value: string) => {
     setFormDataObj((prev) => ({
       ...prev,
       [field]: value,
     }));
 
-    if (errors[field as keyof typeof errors]) {
+    if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
         [field]: undefined,
@@ -119,7 +124,7 @@ export default function Edit(props: { id: string }) {
   const handleFileUpload = async (field: "upload1" | "upload2", file: File) => {
     setFormDataObj((prev) => ({
       ...prev,
-      [field]: [...prev[field], file],
+      [field]: [...(prev[field] || []), file],
     }));
 
     if (errors[field]) {
@@ -136,7 +141,7 @@ export default function Edit(props: { id: string }) {
   ) => {
     setFormDataObj((prev) => ({
       ...prev,
-      [field]: prev[field].filter(
+      [field]: (prev[field] || []).filter(
         (file) =>
           !(file.name === fileToRemove.name && file.size === fileToRemove.size),
       ),
@@ -146,155 +151,235 @@ export default function Edit(props: { id: string }) {
   const handleValid = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const validatedFields = PageSchema.safeParse({
-      id: formDataObj.id,
-      power: formDataObj.power,
-      power2: formDataObj.power2,
-      contents: formDataObj.contents,
-      upload1: formDataObj.upload1,
-      upload2: formDataObj.upload2,
-    });
+    const validatedFields = ItemSchema.safeParse(formDataObj);
 
     if (!validatedFields.success) {
-      setErrors(validatedFields.error.flatten().fieldErrors);
+      setErrors(validatedFields.error.format());
       return;
     }
 
     setIsModal(true);
-    setErrors({});
+    setErrors({ _errors: [] });
   };
 
+  //TODO. MSW MOCK DATA라 교체해야함
   const updateMutation = useMutation({
-    mutationKey: ["updateExample", props.id],
-    mutationFn: async (payload: z.infer<typeof PageSchema>) => {
-      const res = await customFetch(`/api/example/${props.id}`, {
+    mutationKey: ["updateItem", props.id],
+    mutationFn: async (payload: ItemFormData) => {
+      const submitData = {
+        header: payload.header,
+        type: payload.type,
+        status: payload.status,
+        target: payload.target || "",
+        limit: payload.limit || "",
+        reviewer: payload.reviewer,
+      };
+
+      const res = await customFetch(`/api/items/${props.id}`, {
         method: "PUT",
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(submitData),
       });
 
       const data = await res.json();
 
       if (!data.success) {
-        throw new Error(data.msg);
+        throw new Error(data.message || "수정에 실패했습니다");
       }
 
-      return res;
+      return data;
     },
 
     onSuccess: () => {
       setIsSuccess(true);
+      queryClient.invalidateQueries({ queryKey: ["items"] });
+      queryClient.invalidateQueries({ queryKey: ["item", props.id] });
+      setTimeout(() => {
+        push(`/data-table/${props.id}`);
+      }, 1500);
     },
   });
 
   const handleSubmit = async () => {
+    setIsModal(false);
     await updateMutation.mutateAsync(formDataObj);
   };
+
+  if (isLoading) {
+    return (
+      <SectionContainer>
+        <div className="flex h-64 w-full items-center justify-center">
+          <Spinner />
+        </div>
+      </SectionContainer>
+    );
+  }
 
   return (
     <FormRoot onSubmit={handleValid}>
       <SectionContainer>
-        <SectionTitle>수정 예시</SectionTitle>
+        <SectionTitle>항목 수정 (ID: {props.id})</SectionTitle>
         <SectionContent>
           <Table type="description" className="mb-4">
-            <TableCaption>프로젝트 문서 목록</TableCaption>
+            <TableCaption>항목 수정</TableCaption>
             <TableBody>
               <TableRow>
                 <TableHead>
-                  <label htmlFor="id">아이디</label>
+                  <label htmlFor="header">제목 *</label>
                 </TableHead>
-                <TableCell>
-                  <FormField name="id">
-                    <FormControl asChild>
-                      <Input
-                        className={cn("w-full", errors.id && "border-red-500")}
-                        id="id"
-                        size="md"
-                        value={formDataObj.id}
-                        onChange={(e) =>
-                          handleInputChange("id", e.target.value)
-                        }
-                      />
-                    </FormControl>
-                    {errors?.id && <FormMessage>{errors.id[0]}</FormMessage>}
-                  </FormField>
-                </TableCell>
-                <TableHead>
-                  <label htmlFor="power">권한</label>
-                </TableHead>
-                <TableCell>
-                  <FormField name="power">
+                <TableCell colSpan={3}>
+                  <FormField name="header">
                     <FormControl asChild>
                       <Input
                         className={cn(
                           "w-full",
-                          errors.power && "border-red-500",
+                          errors.header && "border-red-500",
                         )}
-                        id="power"
+                        id="header"
                         size="md"
-                        value={formDataObj.power}
+                        value={formDataObj.header}
                         onChange={(e) =>
-                          handleInputChange("power", e.target.value)
+                          handleInputChange("header", e.target.value)
                         }
+                        placeholder="제목을 입력하세요"
                       />
                     </FormControl>
-                    {errors?.power && (
-                      <FormMessage>{errors.power[0]}</FormMessage>
+                    {errors.header && (
+                      <FormMessage>{errors.header._errors[0]}</FormMessage>
                     )}
                   </FormField>
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableHead>등록자</TableHead>
-                <TableCell>등록자</TableCell>
-                <TableHead>권한2</TableHead>
+                <TableHead>
+                  <label htmlFor="type">타입 *</label>
+                </TableHead>
                 <TableCell>
-                  <FormField name="power2">
+                  <FormField name="type">
                     <FormControl asChild>
                       <Select
-                        value={formDataObj.power2 || "전체"}
+                        value={formDataObj.type}
                         onValueChange={(value) =>
-                          handleInputChange("power2", value)
+                          handleInputChange("type", value)
                         }
                       >
                         <SelectTrigger
                           className={cn(
                             "w-full",
-                            errors.power2 && "border-red-500",
+                            errors.type && "border-red-500",
                           )}
                         >
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="전체">전체</SelectItem>
-                          <SelectItem value="제목">제목</SelectItem>
-                          <SelectItem value="내용">내용</SelectItem>
+                          <SelectItem value="Narrative">Narrative</SelectItem>
+                          <SelectItem value="Technical content">
+                            Technical content
+                          </SelectItem>
+                          <SelectItem value="Research">Research</SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
-                    {errors?.power2 && (
-                      <FormMessage>{errors.power2[0]}</FormMessage>
+                    {errors.type && (
+                      <FormMessage>{errors.type._errors[0]}</FormMessage>
+                    )}
+                  </FormField>
+                </TableCell>
+                <TableHead>
+                  <label htmlFor="status">상태 *</label>
+                </TableHead>
+                <TableCell>
+                  <FormField name="status">
+                    <FormControl asChild>
+                      <Select
+                        value={formDataObj.status}
+                        onValueChange={(value) =>
+                          handleInputChange("status", value)
+                        }
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            "w-full",
+                            errors.status && "border-red-500",
+                          )}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="In Process">In Process</SelectItem>
+                          <SelectItem value="Done">Done</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    {errors.status && (
+                      <FormMessage>{errors.status._errors[0]}</FormMessage>
                     )}
                   </FormField>
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableHead className="align-baseline">내용</TableHead>
-                <TableCell colSpan={3}>
-                  <FormField name="contents">
+                <TableHead>
+                  <label htmlFor="target">Target</label>
+                </TableHead>
+                <TableCell>
+                  <FormField name="target">
                     <FormControl asChild>
-                      <Textarea
-                        className={cn(
-                          "w-full",
-                          errors.contents && "border-red-500",
-                        )}
-                        value={formDataObj.contents}
+                      <Input
+                        className="w-full"
+                        id="target"
+                        size="md"
+                        value={formDataObj.target}
                         onChange={(e) =>
-                          handleInputChange("contents", e.target.value)
+                          handleInputChange("target", e.target.value)
                         }
+                        placeholder="숫자 입력"
                       />
                     </FormControl>
-                    {errors?.contents && (
-                      <FormMessage>{errors.contents[0]}</FormMessage>
+                  </FormField>
+                </TableCell>
+                <TableHead>
+                  <label htmlFor="limit">Limit</label>
+                </TableHead>
+                <TableCell>
+                  <FormField name="limit">
+                    <FormControl asChild>
+                      <Input
+                        className="w-full"
+                        id="limit"
+                        size="md"
+                        value={formDataObj.limit}
+                        onChange={(e) =>
+                          handleInputChange("limit", e.target.value)
+                        }
+                        placeholder="숫자 입력"
+                      />
+                    </FormControl>
+                  </FormField>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableHead>
+                  <label htmlFor="reviewer">검토자 *</label>
+                </TableHead>
+                <TableCell colSpan={3}>
+                  <FormField name="reviewer">
+                    <FormControl asChild>
+                      <Input
+                        className={cn(
+                          "w-full",
+                          errors.reviewer && "border-red-500",
+                        )}
+                        id="reviewer"
+                        size="md"
+                        value={formDataObj.reviewer}
+                        onChange={(e) =>
+                          handleInputChange("reviewer", e.target.value)
+                        }
+                        placeholder="검토자 이름을 입력하세요"
+                      />
+                    </FormControl>
+                    {errors.reviewer && (
+                      <FormMessage>{errors.reviewer._errors[0]}</FormMessage>
                     )}
                   </FormField>
                 </TableCell>
@@ -315,14 +400,14 @@ export default function Edit(props: { id: string }) {
                         }}
                       />
                     </FormControl>
-                    {errors?.upload1 && (
-                      <FormMessage>{errors.upload1[0]}</FormMessage>
+                    {errors.upload1 && (
+                      <FormMessage>{errors.upload1._errors[0]}</FormMessage>
                     )}
                   </FormField>
                 </TableCell>
               </TableRow>
               <TableRow>
-                <TableHead>파일 업로드2</TableHead>
+                <TableHead>파일 업로드2 (Drag & Drop)</TableHead>
                 <TableCell colSpan={3}>
                   <FormField name="upload2">
                     <FormControl asChild>
@@ -337,8 +422,8 @@ export default function Edit(props: { id: string }) {
                         }}
                       />
                     </FormControl>
-                    {errors?.upload2 && (
-                      <FormMessage>{errors.upload2[0]}</FormMessage>
+                    {errors.upload2 && (
+                      <FormMessage>{errors.upload2._errors[0]}</FormMessage>
                     )}
                   </FormField>
                 </TableCell>
@@ -347,10 +432,12 @@ export default function Edit(props: { id: string }) {
           </Table>
         </SectionContent>
         <BtnArea>
-          <LinkButton color="outlined" href="/data-table">
+          <LinkButton color="outlined" href={`/data-table/${props.id}`}>
             취소
           </LinkButton>
-          <Button color="gray">수정</Button>
+          <Button color="gray" disabled={updateMutation.isPending}>
+            수정
+          </Button>
         </BtnArea>
         <Modal
           title={CONST_SOLUTION_NAME}
@@ -371,11 +458,14 @@ export default function Edit(props: { id: string }) {
           onOpenChange={setIsSuccess}
           onClick={() => {
             setIsSuccess(false);
+            push(`/data-table/${props.id}`);
           }}
         />
         <Alert
           title={CONST_SOLUTION_NAME}
-          description={updateMutation.error?.message || ""}
+          description={
+            updateMutation.error?.message || "알 수 없는 오류가 발생했습니다"
+          }
           open={updateMutation.isError}
           onClick={() => {
             updateMutation.reset();

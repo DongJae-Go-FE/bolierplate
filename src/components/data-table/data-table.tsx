@@ -11,7 +11,6 @@ import {
   flexRender,
   SortingState,
   getSortedRowModel,
-  getPaginationRowModel,
   RowSelectionState,
   OnChangeFn,
 } from "@tanstack/react-table";
@@ -48,7 +47,8 @@ type DataTableProps<T> = {
   isSticky?: boolean;
   pageSize?: number;
   totalCount: number;
-  onPageChange?: () => void;
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
   rowSelection?: RowSelectionState;
   onRowSelectionChange?: OnChangeFn<RowSelectionState>;
   isLoading?: boolean;
@@ -61,6 +61,8 @@ export default function DataTable<T>({
   isSticky,
   totalCount,
   pageSize = 10,
+  currentPage = 1,
+  onPageChange,
   isLoading = false,
   rowSelection,
   onRowSelectionChange,
@@ -73,25 +75,22 @@ export default function DataTable<T>({
     columns: columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    //manualPagination: true, 서버 사이드 페이지네이션
+    manualPagination: true,
+    pageCount: Math.ceil(totalCount / pageSize),
     onSortingChange: setSorting,
     onRowSelectionChange: onRowSelectionChange,
     state: {
       sorting,
       rowSelection,
-    },
-    initialState: {
       pagination: {
+        pageIndex: currentPage - 1,
         pageSize: pageSize,
       },
     },
   });
 
-  const currentPage = table.getState().pagination.pageIndex + 1;
   const totalPages = Math.ceil(totalCount / pageSize);
 
-  //TODO. 추후 API 연동시  삭제
   const getPageNumbers = () => {
     const pages: number[] = [];
     const maxVisible = 5;
@@ -110,6 +109,12 @@ export default function DataTable<T>({
     return pages;
   };
 
+  const handlePageChange = (page: number) => {
+    if (onPageChange) {
+      onPageChange(page);
+    }
+  };
+
   return (
     <div className="flex w-full flex-col">
       <div className="relative h-[530px] w-full overflow-auto [&_>div]:h-full">
@@ -117,7 +122,9 @@ export default function DataTable<T>({
           isLoading={isLoading}
           isEmpty={data.length === 0 || !data}
         >
-          <Table>
+          <Table
+            className={cn(table.getRowModel().rows.length === 0 && "h-full")}
+          >
             <TableCaption>{caption}</TableCaption>
             <TableHeader className={cn(isSticky && "sticky -top-[px] z-10")}>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -153,7 +160,7 @@ export default function DataTable<T>({
                   </TableRow>
                 ))
               ) : (
-                <TableRow>
+                <TableRow className="h-full">
                   <TableCell colSpan={columns.length} className="text-center">
                     데이터가 없습니다.
                   </TableCell>
@@ -169,21 +176,21 @@ export default function DataTable<T>({
           <PaginationContent>
             <PaginationItem>
               <PaginationStart
-                onClick={() => table.setPageIndex(0)} //onPageChange
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
               />
             </PaginationItem>
             <PaginationItem>
               <PaginationPrevious
-                onClick={() => table.previousPage()} //onPageChange
-                disabled={!table.getCanPreviousPage()}
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
               />
             </PaginationItem>
 
             {getPageNumbers().map((pageNum) => (
               <PaginationItem key={pageNum}>
                 <PaginationLink
-                  onClick={() => table.setPageIndex(pageNum - 1)}
+                  onClick={() => handlePageChange(pageNum)}
                   isActive={currentPage === pageNum}
                 >
                   {pageNum}
@@ -193,14 +200,14 @@ export default function DataTable<T>({
 
             <PaginationItem>
               <PaginationNext
-                onClick={() => table.nextPage()} //onPageChange
-                disabled={!table.getCanNextPage()}
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
               />
             </PaginationItem>
             <PaginationItem>
               <PaginationLast
-                onClick={() => table.setPageIndex(totalPages - 1)} //onPageChange
-                disabled={!table.getCanNextPage()}
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
               />
             </PaginationItem>
           </PaginationContent>

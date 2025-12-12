@@ -1,5 +1,5 @@
 
 {
-  "swaggerUrl": "http://218.237.65.185:8089/v3/api-docs",
+  "swaggerUrl": "example-swaggerUrl/v3/api-docs",
   "outputDir": "src/lib/network/api"
 }

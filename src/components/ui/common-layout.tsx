@@ -219,5 +219,7 @@ export function ContentRender(props: {
     );
   }
 
-  return props.children;
+  return (
+    <div className={cn("h-full w-full", props.className)}>{props.children}</div>
+  );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import {
@@ -19,14 +18,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
-import {
-  Calendar,
-  Home,
-  Inbox,
-  Search,
-  Settings,
-  ChevronDown,
-} from "lucide-react";
+import { Calendar, Home, Search, Settings, ChevronDown } from "lucide-react";
 import { cn } from "@hdc-ui/utils";
 
 const items = [
@@ -34,11 +26,6 @@ const items = [
     title: "메인",
     url: "/main",
     icon: Home,
-  },
-  {
-    title: "테이블",
-    url: "/table",
-    icon: Inbox,
   },
   {
     title: "데이터 테이블",

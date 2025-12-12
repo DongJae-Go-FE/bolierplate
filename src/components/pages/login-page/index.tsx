@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { useState, FormEvent } from "react";
+
+import { useMutation } from "@tanstack/react-query";
 
 import {
   AlertDialog,
@@ -11,22 +14,25 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogTitle,
-  //AlertDialogTrigger  필요시 사용
 } from "@hdc-ui/components/ui/alert-dialog";
 import { Button } from "@hdc-ui/components/ui/button";
 import { CheckboxButton } from "@hdc-ui/components/ui/checkbox";
 import { Input } from "@hdc-ui/components/ui/input";
-
-//로그인 요청시 버튼에 추가
-//import { Spinner } from "@hdc-ui/components/ui/spinner";
+import { Spinner } from "@hdc-ui/components/ui/spinner";
 
 import { FormRoot, FormControl, FormField, FormMessage } from "../../ui/form";
 
 import { cn } from "@hdc-ui/utils";
 
 import { LoginSchema } from "../../../lib/zod/schema";
+import { useAuth } from "@/components/common-provider";
 
 export default function Login() {
+  const { push } = useRouter();
+
+  //TODO. MSW MOCK DATA라 교체해야함
+  const { login, refreshUser } = useAuth();
+
   const [formDataObj, setFormDataObj] = useState({
     id: "",
     pw: "",
@@ -36,6 +42,23 @@ export default function Login() {
     id?: string[];
     pw?: string[];
   }>({});
+
+  const [alertOpen, setAlertOpen] = useState(false);
+
+  //TODO. MSW MOCK DATA라 교체해야함
+  const loginMutation = useMutation({
+    mutationKey: ["login"],
+    mutationFn: async (payload: { id: string; pw: string }) => {
+      await login(payload.id, payload.pw);
+    },
+    onSuccess: async () => {
+      await refreshUser();
+      push("/main");
+    },
+    onError: () => {
+      setAlertOpen(true);
+    },
+  });
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormDataObj((prev) => ({
@@ -62,12 +85,13 @@ export default function Login() {
     if (!validatedFields.success) {
       setErrors(validatedFields.error.flatten().fieldErrors);
       return;
-    } else {
-      setErrors({});
-
-      //POST 요청시 body에 아래 변수 담아서 요청
-      //const loginForm = Object.fromEntries(new FormData(e.currentTarget));
     }
+
+    setErrors({});
+    await loginMutation.mutateAsync({
+      id: formDataObj.id,
+      pw: formDataObj.pw,
+    });
   };
 
   return (
@@ -89,6 +113,7 @@ export default function Login() {
                 size="xl"
                 value={formDataObj.id}
                 onChange={(e) => handleInputChange("id", e.target.value)}
+                disabled={loginMutation.isPending}
               />
             </FormControl>
             {errors?.id && <FormMessage>{errors.id[0]}</FormMessage>}
@@ -107,6 +132,7 @@ export default function Login() {
                 size="xl"
                 value={formDataObj.pw}
                 onChange={(e) => handleInputChange("pw", e.target.value)}
+                disabled={loginMutation.isPending}
               />
             </FormControl>
             {errors?.pw && <FormMessage>{errors.pw[0]}</FormMessage>}
@@ -116,29 +142,49 @@ export default function Login() {
               id="storeSession"
               htmlFor="storeSession"
               className="[&>button]:bg-white"
+              disabled={loginMutation.isPending}
             >
               로그인 상태 유지
             </CheckboxButton>
             <Link
               href="/sign"
-              className="body02M text-gray-900 underline underline-offset-4"
+              className={cn(
+                "body02M text-gray-900 underline underline-offset-4",
+                loginMutation.isPending &&
+                  "pointer-events-none cursor-auto opacity-80",
+              )}
             >
               회원가입
             </Link>
           </div>
         </div>
-        <Button className="mb-6 w-full" color="gray" size="xl">
-          로그인
+        <Button
+          className="mb-6 flex w-full items-center justify-center"
+          color="gray"
+          size="xl"
+          disabled={loginMutation.isPending}
+        >
+          {loginMutation.isPending ? <Spinner /> : "로그인"}
         </Button>
       </FormRoot>
-      <AlertDialog>
-        {/** open 로직을 AlertDialogContent에서 설정을 하거나 AlertDialogTrigger를 사용 */}
+      <AlertDialog open={alertOpen} onOpenChange={setAlertOpen}>
         <AlertDialogContent>
           <AlertDialogTitle>솔루션 명</AlertDialogTitle>
-          <AlertDialogDescription>메세지 작성</AlertDialogDescription>
+          <AlertDialogDescription>
+            {loginMutation.error?.message ||
+              "로그인에 실패했습니다. 다시 시도해주세요."}
+          </AlertDialogDescription>
           <AlertDialogFooter>
             <AlertDialogAction asChild>
-              <Button className="w-30" color="outlined" autoFocus>
+              <Button
+                className="w-30"
+                color="outlined"
+                autoFocus
+                onClick={() => {
+                  setAlertOpen(false);
+                  loginMutation.reset();
+                }}
+              >
                 확인
               </Button>
             </AlertDialogAction>
